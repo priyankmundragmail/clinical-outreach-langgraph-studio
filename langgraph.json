@@ -1,0 +1,16 @@
+{
+  "name": "Clinical Outreach Agent",
+  "description": "AI-powered clinical outreach and patient cohort analysis system",
+  "version": "1.0.0",
+  "dependencies": [
+    "langchain>=0.1.0",
+    "langgraph>=0.1.0", 
+    "langchain-openai>=0.1.0",
+    "langchain-core>=0.1.0",
+    "python-dotenv>=1.0.0"
+  ],
+  "graphs": {
+    "clinical_outreach": "./src/clinical_outreach_agent/graph.py:graph"
+  },
+  "env": ".env"
+}
