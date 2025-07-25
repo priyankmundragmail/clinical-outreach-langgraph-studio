@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# VSCode
+.vscode/
+
+# Environment
+.env
+
+# OS files
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+*.log
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# Test outputs
+*.coverage
+coverage.xml
+htmlcov/
+
+# LangGraph Studio
+langgraph_studio.db
