@@ -14,5 +14,6 @@
             "fileMatch": ["langgraph.json"],
             "url": "https://raw.githubusercontent.com/langchain-ai/langgraph/main/libs/langgraph/langgraph/schemas/langgraph.json"
         }
-    ]
+    ],
+    "python-envs.pythonProjects": []
 }

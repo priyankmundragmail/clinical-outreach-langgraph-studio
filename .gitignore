@@ -3,31 +3,80 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.pyw
+*.egg-info/
+*.egg
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.virtualenv
 
 # VSCode
 .vscode/
+*.code-workspace
 
-# Environment
-.env
-
-# OS files
-.DS_Store
+# PyCharm
+.idea/
 
 # Jupyter
 .ipynb_checkpoints/
+*.ipynb
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
 # Logs
 *.log
+logs/
 
-# Build
-build/
-dist/
-*.egg-info/
-
-# Test outputs
-*.coverage
-coverage.xml
+# Testing
+.coverage
+.pytest_cache/
+.tox/
+.nox/
 htmlcov/
+coverage.xml
+*.cover
+.hypothesis/
 
 # LangGraph Studio
 langgraph_studio.db
+.langgraph_api/
+.langgraph/
+
+# Node modules (if any)
+node_modules/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/

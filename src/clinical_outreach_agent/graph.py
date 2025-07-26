@@ -7,15 +7,16 @@ from langchain_openai import ChatOpenAI
 import os
 from dotenv import load_dotenv
 
-from .tools.cohort_analysis_tools import (
+# Change relative imports to absolute imports
+from clinical_outreach_agent.tools.cohort_analysis_tools import (
     classify_patient_to_cohorts,
     analyze_intervention_need,
     match_patient_to_interventions,
     evaluate_cohort_membership,
     generate_cohort_summary
 )
-from .tools.fire_reminder import fire_reminder
-from .prompts.templates import PromptTemplates
+from clinical_outreach_agent.tools.fire_reminder import fire_reminder
+from clinical_outreach_agent.prompts.templates import PromptTemplates
 
 # Load environment variables
 load_dotenv()
