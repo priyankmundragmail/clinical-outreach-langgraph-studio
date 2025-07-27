@@ -16,6 +16,7 @@ from clinical_outreach_agent.tools.cohort_analysis_tools import (
     generate_cohort_summary
 )
 from clinical_outreach_agent.tools.fire_reminder import fire_reminder
+from clinical_outreach_agent.tools.access_patient_data import get_all_patients, get_patient_data
 from clinical_outreach_agent.prompts.templates import PromptTemplates
 
 # Load environment variables
@@ -35,6 +36,18 @@ class ClinicalAgentState(TypedDict):
     # Current workflow phase
     current_phase: str
 
+# Define all clinical tools in one place
+CLINICAL_TOOLS = [
+    get_all_patients,
+    get_patient_data,
+    classify_patient_to_cohorts,
+    analyze_intervention_need,
+    match_patient_to_interventions,
+    evaluate_cohort_membership,
+    generate_cohort_summary,
+    fire_reminder
+]
+
 def create_llm_with_tools():
     """Create ChatOpenAI instance with all clinical tools bound."""
     llm = ChatOpenAI(
@@ -44,17 +57,18 @@ def create_llm_with_tools():
         max_retries=2
     )
     
-    # Bind all clinical tools
-    tools = [
-        classify_patient_to_cohorts,
-        analyze_intervention_need, 
-        match_patient_to_interventions,
-        evaluate_cohort_membership,
-        generate_cohort_summary,
-        fire_reminder
-    ]
-    
-    return llm.bind_tools(tools)
+    # Use the centralized tools list
+    return llm.bind_tools(CLINICAL_TOOLS)
+
+def update_state(state: ClinicalAgentState, response: BaseMessage, phase: str) -> ClinicalAgentState:
+    """Helper function to update state consistently across all nodes."""
+    return {
+        "messages": [response],
+        "current_patient": state.get("current_patient", {}),
+        "analysis_results": state.get("analysis_results", {}),
+        "recommendations": state.get("recommendations", []),
+        "current_phase": phase
+    }
 
 def planning_node(state: ClinicalAgentState) -> ClinicalAgentState:
     """Generate strategic plan for patient analysis and care coordination."""
@@ -76,13 +90,7 @@ Generate a comprehensive plan for this patient's care coordination.
     
     response = llm.invoke([SystemMessage(content=planning_prompt)] + state["messages"])
     
-    return {
-        "messages": [response],
-        "current_patient": state.get("current_patient", {}),
-        "analysis_results": state.get("analysis_results", {}),
-        "recommendations": state.get("recommendations", []),
-        "current_phase": "planning_complete"
-    }
+    return update_state(state, response, "planning_complete")
 
 def analysis_node(state: ClinicalAgentState) -> ClinicalAgentState:
     """Execute comprehensive patient analysis using clinical tools."""
@@ -106,13 +114,7 @@ Use the available tools to build a comprehensive clinical assessment.
     
     response = llm.invoke([SystemMessage(content=analysis_prompt)] + state["messages"])
     
-    return {
-        "messages": [response],
-        "current_patient": state.get("current_patient", {}),
-        "analysis_results": state.get("analysis_results", {}),
-        "recommendations": state.get("recommendations", []),
-        "current_phase": "analysis_complete"
-    }
+    return update_state(state, response, "analysis_complete")
 
 def action_node(state: ClinicalAgentState) -> ClinicalAgentState:
     """Execute recommended clinical actions and patient outreach."""
@@ -137,13 +139,7 @@ Use the fire_reminder tool for patient outreach when interventions are identifie
     
     response = llm.invoke([SystemMessage(content=action_prompt)] + state["messages"])
     
-    return {
-        "messages": [response],
-        "current_patient": state.get("current_patient", {}),
-        "analysis_results": state.get("analysis_results", {}),
-        "recommendations": state.get("recommendations", []),
-        "current_phase": "actions_complete"
-    }
+    return update_state(state, response, "actions_complete")
 
 def should_continue(state: ClinicalAgentState) -> str:
     """Determine next workflow step based on current state."""
@@ -186,16 +182,8 @@ def create_graph():
     workflow.add_node("analysis", analysis_node)
     workflow.add_node("action", action_node)
     
-    # Add tool execution node
-    tools = [
-        classify_patient_to_cohorts,
-        analyze_intervention_need,
-        match_patient_to_interventions,
-        evaluate_cohort_membership,
-        generate_cohort_summary,
-        fire_reminder
-    ]
-    workflow.add_node("tools", ToolNode(tools))
+    # Use the centralized tools list
+    workflow.add_node("tools", ToolNode(CLINICAL_TOOLS))
     
     # Define workflow edges
     workflow.add_edge(START, "planning")
